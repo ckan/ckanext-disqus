@@ -47,7 +47,7 @@ class Disqus(SingletonPlugin):
             routes.get('action') == 'read' and c.pkg.id:
             data = {'name': self.disqus_name, 
                     'url': url_for(controller='package', action='read', 
-                                   id=pkg.id),
+                                   id=c.pkg.id),
                     'identifier': 'pkg-' + c.pkg.id}
             stream = stream | Transformer('body')\
                 .append(HTML(html.BOTTOM_CODE % data))
