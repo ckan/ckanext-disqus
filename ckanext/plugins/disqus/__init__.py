@@ -40,14 +40,11 @@ class Disqus(SingletonPlugin):
         """
         
         from pylons import request, tmpl_context as c 
-        from ckan.lib.helpers import url_for
         routes = request.environ.get('pylons.routes_dict')
         
         if routes.get('controller') == 'package' and \
             routes.get('action') == 'read' and c.pkg.id:
             data = {'name': self.disqus_name, 
-                    'url': url_for(controller='package', action='read', 
-                                   id=c.pkg.id),
                     'identifier': 'pkg-' + c.pkg.id}
             stream = stream | Transformer('body')\
                 .append(HTML(html.BOTTOM_CODE % data))
