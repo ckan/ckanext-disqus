@@ -6,6 +6,7 @@ from genshi.filters import Transformer
 
 from ckan.plugins import SingletonPlugin, implements
 from ckan.plugins.interfaces import IConfigurable, IGenshiStreamFilter
+from ckan.lib.helpers import url_for 
 
 import html
 
@@ -30,6 +31,7 @@ class Disqus(SingletonPlugin):
             log.warn("No disqus forum name is set. Please set \
                 'disqus.name' in your .ini!")
             self.disqus_name = 'ckan'
+        config['pylons.app_globals'].has_commenting = True
         
     def filter(self, stream):
         """
@@ -43,8 +45,11 @@ class Disqus(SingletonPlugin):
         routes = request.environ.get('pylons.routes_dict')
         
         if routes.get('controller') == 'package' and \
-            routes.get('action') == 'read' and c.pkg.id:
+            routes.get('action') == 'comments' and c.pkg.id:
+            url = url_for(controller='package', action='read', 
+                          id=c.pkg.name, qualified=True)
             data = {'name': self.disqus_name, 
+                    'url': url,
                     'identifier': 'pkg-' + c.pkg.id}
             stream = stream | Transformer('body')\
                 .append(HTML(html.BOTTOM_CODE % data))
