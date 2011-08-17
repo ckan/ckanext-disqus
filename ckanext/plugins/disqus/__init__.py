@@ -56,12 +56,5 @@ class Disqus(SingletonPlugin):
             stream = stream | Transformer('body//div[@id="comments"]')\
                 .append(HTML(html.COMMENT_CODE % data))
         
-        if routes.get('controller') == 'home' and \
-            routes.get('action') == 'index':
-            data = {'name': self.disqus_name}
-            stream = stream | Transformer('body//\
-                div[@id="main"]//ul[@class="xoxo"]')\
-                .append(HTML(html.LATEST_CODE % data))
-        
         return stream
     
