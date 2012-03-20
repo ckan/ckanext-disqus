@@ -16,7 +16,7 @@ setup(
 	url='http://okfn.org',
 	license='GPL',
 	packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
-	namespace_packages=['ckanext', 'ckanext.plugins'],
+	namespace_packages=['ckanext', 'ckanext.disqus'],
 	include_package_data=True,
 	zip_safe=False,
 	install_requires=[
@@ -24,8 +24,7 @@ setup(
 	],
 	entry_points=\
 	"""
-    
     [ckan.plugins]
-	disqus = ckanext.plugins.disqus:Disqus
+	disqus = ckanext.disqus.plugins:Disqus
 	""",
 )
