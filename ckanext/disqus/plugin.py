@@ -27,6 +27,7 @@ class Disqus(SingletonPlugin):
         to the plugin to read custom options. 
         """
         self.disqus_name = config.get('disqus.name', None)
+        self.disqus_developer = config.get('disqus.developer', 'false')
         if self.disqus_name is None:
             log.warn("No disqus forum name is set. Please set \
                 'disqus.name' in your .ini!")
@@ -39,20 +40,34 @@ class Disqus(SingletonPlugin):
         global objects, how can this be fixed without obscuring the 
         inteface? 
         """
-        from pylons import request, tmpl_context as c 
+        from pylons import request
         routes = request.environ.get('pylons.routes_dict')
-        
-        if routes.get('controller') == 'package' and \
-            routes.get('action') == 'comments' and c.pkg.id:
-            url = url_for(controller='package', action='read', 
-                          id=c.pkg.name, qualified=True)
-            data = {'name': self.disqus_name, 
-                    'url': url,
-                    'identifier': 'pkg-' + c.pkg.id}
-            stream = stream | Transformer('body')\
-                .append(HTML(html.BOTTOM_CODE % data))
-            stream = stream | Transformer('body//div[@id="comments"]')\
-                .append(HTML(html.COMMENT_CODE % data))
+        try:
+            identifier = routes.get('controller')
+            if identifier == 'package':
+                identifier = 'dataset'
+            if routes.get('id'):
+                identifier += '::' + routes.get('id')
+            else:
+                # cannot make an identifier
+                identifier = ''
+            # special case
+            if routes.get('action') == 'resource_read':
+                identifier = 'dataset-resource::' + routes.get('resource_id')
+        except:
+            identifer = ''
+
+        data = {'name': self.disqus_name, 
+                'identifier': identifier,
+                'disqus_developer': self.disqus_developer
+            }
+        comment_code = HTML(html.COMMENT_CODE % data)
+        stream = stream | Transformer('//span[@class="insert-comment-thread"]')\
+                 .after(comment_code)
+
+        recent = HTML(html.RECENT_COMMENTS % data)
+        stream = stream | Transformer('//span[@class="insert-comment-recent"]')\
+                 .after(recent)
         
         return stream
-    
+
