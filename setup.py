@@ -25,6 +25,6 @@ setup(
 	entry_points=\
 	"""
     [ckan.plugins]
-	disqus = ckanext.disqus.plugins:Disqus
+	disqus = ckanext.disqus.plugin:Disqus
 	""",
 )
