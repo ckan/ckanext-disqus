@@ -55,7 +55,7 @@ class Disqus(SingletonPlugin):
             if routes.get('action') == 'resource_read':
                 identifier = 'dataset-resource::' + routes.get('resource_id')
         except:
-            identifer = ''
+            identifier = ''
 
         data = {'name': self.disqus_name, 
                 'identifier': identifier,
