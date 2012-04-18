@@ -1,6 +1,6 @@
 COMMENT_CODE = """
 <div class="ckan-comment-thread">
-  <h3>Comments</h3> 
+  <h3>Comments</h3>
   <div id="disqus_thread"></div>
 </div>
 <script type="text/javascript">

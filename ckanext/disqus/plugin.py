@@ -6,7 +6,7 @@ from genshi.filters import Transformer
 
 from ckan.plugins import SingletonPlugin, implements
 from ckan.plugins.interfaces import IConfigurable, IGenshiStreamFilter
-from ckan.lib.helpers import url_for 
+from ckan.lib.helpers import url_for
 
 import html
 
@@ -14,17 +14,17 @@ log = logging.getLogger(__name__)
 
 class Disqus(SingletonPlugin):
     """
-    Insert javascript fragments into package pages and the home page to 
-    allow users to view and create comments on any package. 
+    Insert javascript fragments into package pages and the home page to
+    allow users to view and create comments on any package.
     """
-    
+
     implements(IConfigurable)
     implements(IGenshiStreamFilter)
-    
+
     def configure(self, config):
-        """ 
+        """
         Called upon CKAN setup, will pass current configuration dict
-        to the plugin to read custom options. 
+        to the plugin to read custom options.
         """
         self.disqus_name = config.get('disqus.name', None)
         self.disqus_developer = config.get('disqus.developer', 'false')
@@ -32,13 +32,13 @@ class Disqus(SingletonPlugin):
             log.warn("No disqus forum name is set. Please set \
                 'disqus.name' in your .ini!")
         config['pylons.app_globals'].has_commenting = True
-        
+
     def filter(self, stream):
         """
-        Required to implement IGenshiStreamFilter; will apply some HTML 
+        Required to implement IGenshiStreamFilter; will apply some HTML
         transformations to the page currently rendered. Depends on Pylons
-        global objects, how can this be fixed without obscuring the 
-        inteface? 
+        global objects, how can this be fixed without obscuring the
+        inteface?
         """
         from pylons import request
         routes = request.environ.get('pylons.routes_dict')
@@ -57,7 +57,7 @@ class Disqus(SingletonPlugin):
         except:
             identifier = ''
 
-        data = {'name': self.disqus_name, 
+        data = {'name': self.disqus_name,
                 'identifier': identifier,
                 'disqus_developer': self.disqus_developer
             }
@@ -68,6 +68,6 @@ class Disqus(SingletonPlugin):
         recent = HTML(html.RECENT_COMMENTS % data)
         stream = stream | Transformer('//span[@class="insert-comment-recent"]')\
                  .after(recent)
-        
+
         return stream
 
