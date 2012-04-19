@@ -1,14 +1,6 @@
 import logging
-import os
 
-from webhelpers.html.tags import literal
-from paste.deploy.converters import asbool
-from pylons import c, request
-
-import ckan.lib.base as base
-import ckan.plugins as plugins
-
-import ckanext.disqus
+import ckan.plugins as p
 
 
 disqus_translations = {
@@ -36,31 +28,15 @@ disqus_translations = {
 
 log = logging.getLogger(__name__)
 
-def configure_template_directory(config, relative_path):
-    configure_served_directory(config, relative_path, 'extra_template_paths')
 
-def configure_public_directory(config, relative_path):
-    configure_served_directory(config, relative_path, 'extra_public_paths')
-
-def configure_served_directory(config, relative_path, config_var):
-    'Configure serving of public/template directories.'
-    assert config_var in ('extra_template_paths', 'extra_public_paths')
-    this_dir = os.path.dirname(ckanext.disqus.__file__)
-    absolute_path = os.path.join(this_dir, relative_path)
-    if absolute_path not in config.get(config_var, ''):
-        if config.get(config_var):
-            config[config_var] += ',' + absolute_path
-        else:
-            config[config_var] = absolute_path
-
-class Disqus(plugins.SingletonPlugin):
+class Disqus(p.SingletonPlugin):
     """
     Insert javascript fragments into package pages and the home page to
     allow users to view and create comments on any package.
     """
-    plugins.implements(plugins.IConfigurable)
-    plugins.implements(plugins.IConfigurer)
-    plugins.implements(plugins.ITemplateHelpers)
+    p.implements(p.IConfigurable)
+    p.implements(p.IConfigurer)
+    p.implements(p.ITemplateHelpers)
 
     def configure(self, config):
         """
@@ -73,7 +49,7 @@ class Disqus(plugins.SingletonPlugin):
                 'disqus.name' in your .ini!")
         config['pylons.app_globals'].has_commenting = True
 
-        disqus_developer = asbool(config.get('disqus.developer', 'false'))
+        disqus_developer = p.toolkit.asbool(config.get('disqus.developer', 'false'))
         disqus_developer = str(disqus_developer).lower()
         # store these so available to class methods
         self.__class__.disqus_developer = disqus_developer
@@ -81,12 +57,12 @@ class Disqus(plugins.SingletonPlugin):
 
     def update_config(self, config):
         # add template directory to template path
-        configure_template_directory(config, 'templates')
+        p.toolkit.add_template_directory(config, 'templates')
 
 
     @classmethod
     def language(cls):
-        lang = request.environ.get('CKAN_LANG')
+        lang = p.toolkit.request.environ.get('CKAN_LANG')
         if lang in disqus_translations:
             lang = disqus_translations[lang]
         else:
@@ -98,6 +74,7 @@ class Disqus(plugins.SingletonPlugin):
     def disqus_comments(cls):
         '''  '''
         # we need to create an identifier
+        c = p.toolkit.c
         try:
             identifier = c.controller
             if identifier == 'package':
@@ -118,13 +95,13 @@ class Disqus(plugins.SingletonPlugin):
                 'developer' : cls.disqus_developer,
                 'language' : cls.language(),
                 'disqus_shortname': cls.disqus_name,}
-        return literal(base.render('disqus-comments.html', data))
+        return p.toolkit.render_snippet('disqus-comments.html', data)
 
     @classmethod
     def disqus_recent(cls):
         '''  '''
         data = {'disqus_shortname': cls.disqus_name,}
-        return literal(base.render('disqus-recent.html', data))
+        return p.toolkit.render_snippet('disqus-recent.html', data)
 
     def get_helpers(self):
         return {'disqus_comments' : self.disqus_comments,
