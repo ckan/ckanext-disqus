@@ -98,9 +98,10 @@ class Disqus(p.SingletonPlugin):
         return p.toolkit.render_snippet('disqus-comments.html', data)
 
     @classmethod
-    def disqus_recent(cls):
+    def disqus_recent(cls, num_comments=5):
         '''  Adds Disqus recent comments to the page. '''
-        data = {'disqus_shortname': cls.disqus_name,}
+        data = {'disqus_shortname': cls.disqus_name,
+                'disqus_num_comments' : num_comments,}
         return p.toolkit.render_snippet('disqus-recent.html', data)
 
     def get_helpers(self):
