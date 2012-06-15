@@ -17,7 +17,7 @@ able to choose a forurm name.
 
 To install the plugin, enter your virtualenv and load the source::
 
- (pyenv)$ git install -e hg+https://github.com/okfn/ckanext-disqus#egg=ckanext-disqus
+ (pyenv)$ git install -e git+https://github.com/okfn/ckanext-disqus#egg=ckanext-disqus
 
 This will also register a plugin entry point, so you now should be
 able to add the following to your CKAN .ini file::
