@@ -1,0 +1,24 @@
+{#
+Inserts a module showing the most recent comments from Disqus
+
+disqus_shortname - The disqus account name set in the config ini.
+disqus_num_comments - The max number of comments to display (default: 10)
+disqus_hide_avatars - If 1 then hides user avatars (default: 0)
+disqus_avatar_size - The size of the user avatars (default: 32)
+disqus_exerpt_length - The max length of the comment exerpt (default: 200)
+
+Example:
+
+  {% snippet "disqus/snippets/disqus_recent.html", disqus_shortname=disqus_shortname, disqus_num_comments=disqus_num_comments %}
+
+#}
+<section class="module module-shallow module-narrow">
+  <h2 class="module-heading">{{ _('Recent Comments') }}</h2>
+  <div class="simple-list">
+    {# TODO: This is not a good way to load in this content. If Disqus goes
+    down then the page will hang at this point. A better solution would be
+    to append this after page load, capture the inserted content and
+    insert it in the correct place. #}
+    <script type="text/javascript" src="http://{{ disqus_shortname }}.disqus.com/recent_comments_widget.js?num_items={{ disqus_num_comments or 10 }}&amp;hide_avatars={{ disqus_hide_avatars or 0 }}&amp;avatar_size={{ disqus_avatar_size or 32}}&amp;excerpt_length={{ disqus_exerpt_length or 200 }}"></script>
+  </div>
+</section>

@@ -1,0 +1,10 @@
+{# 
+Renders the content module for the disqus comments to be loaded into. Also
+requires the disqus_scripts.html template to be included on the same page.
+#}
+<section class="module">
+  <div id="disqus_thread" class="module-content">
+    <h2>{{ _('Comments') }}</h2>
+    <p class="empty js-hide">{{ _('Comments require JavaScript enabled in your browser.') }}</p>
+  </div>
+</section>

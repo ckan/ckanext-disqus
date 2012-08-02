@@ -1,0 +1,29 @@
+{#
+Script tags and boilerplate code for loading the Disqus commenting system.
+
+disqus_shortname - The account name for the disqus user. Set in the ini file.
+disqus_page_identifier - A unique string for the current page.
+is_debug - If true sets up the disqus plugin in developer mode.
+language - The current page language for localising the disqus content.
+
+Example:
+
+  {% snippet "disqus/snippets/disqus_comments.html" %}
+  {% snippet "disqus/snippets/disqus_scripts.html", disqus_shortname=disqus_shortname, disqus_page_identifier=identifier, is_debug=config.debug, language=h.lang() %}
+
+#}
+<script>
+  (function () {
+    // Global config options.
+    window.disqus_shortname  = "{{ h.escape_js(disqus_shortname) }}";
+    window.disqus_identifier = window.disqus_identifier || "{{ h.escape_js(disqus_page_identifier) }}";
+    window.disqus_developer  = {% if is_debug -%} true {%- else -%} false {% endif %};
+    window.disqus_config = function () { 
+        {% if language %}this.language = "{{ h.escape_js(language) }}";{% endif %}
+    };
+
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
