@@ -1,0 +1,9 @@
+{% ckan_extends %}
+
+{% block primary_content %}
+  {{ super() }}
+
+  {% block disqus_comments %}
+    {{ h.disqus_comments() }}
+  {% endblock %}
+{% endblock %}
