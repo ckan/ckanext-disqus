@@ -37,7 +37,7 @@ Comments Threads
 To have comment threads appear on pages, insert into templates where you want the comments to
 appear::
 
-    ${h.dicqus_comments()}
+    ${h.disqus_comments()}
 
 Note for theme developers: the extensions tries to generate a disqus_identifier
 of the form::
@@ -55,11 +55,11 @@ Recent comments
 
 Insert on pages where you want recent comments to appear::
 
-    ${h.dicqus_recent()}
+    ${h.disqus_recent()}
 
 The recent comments widget will show 5 recent comments by default.  To show 10 recent comments use the following::
 
-    ${h.dicqus_recent(num_comments=10)}
+    ${h.disqus_recent(num_comments=10)}
 
 Other widgets
 ~~~~~~~~~~~~~
