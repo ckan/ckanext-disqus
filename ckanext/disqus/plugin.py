@@ -4,19 +4,17 @@ import ckan.plugins as p
 
 
 disqus_translations = {
-    'de' : 'de_inf',
-    'es' : 'es_ES',
-    'sv' : 'sv_SE',
-    'pt' : 'pt_EU',
-    'sr' : 'sr_CYRL',
-    'sr_Latn' : 'sr_LATIN',
-    'no' : 'en', # broken no translation available
+    'de': 'de',
+    'es': 'es_ES',
+    'sv': 'sv_SE',
+    'pt': 'pt_EU',
+    'sr': 'sr_CYRL',
+    'sr_Latn': 'sr_LATIN',
+    'no': 'en',  # broken no translation available
 }
 
 # These are funny disqus language codes
 # all other codes are two letter language code
-##German (Formal) = de_formal
-##German (Informal) = de_inf
 ##Portuguese (Brazil) = pt_BR
 ##Portuguese (European) = pt_EU
 ##Serbian (Cyrillic) = sr_CYRL
