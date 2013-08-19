@@ -70,7 +70,7 @@ class Disqus(p.SingletonPlugin):
 
     @classmethod
     def disqus_comments(cls):
-        '''  Adds Discus Comments to the page.'''
+        ''' Adds Discus Comments to the page.'''
         # we need to create an identifier
         c = p.toolkit.c
         try:
@@ -93,7 +93,7 @@ class Disqus(p.SingletonPlugin):
                 'developer' : cls.disqus_developer,
                 'language' : cls.language(),
                 'disqus_shortname': cls.disqus_name,}
-        return p.toolkit.render_snippet('disqus-comments.html', data)
+        return p.toolkit.render_snippet('disqus_comments.html', data)
 
     @classmethod
     def disqus_recent(cls, num_comments=5):
