@@ -19,6 +19,8 @@ To install the plugin, enter your virtualenv and load the source::
 
  (pyenv)$ pip install -e git+https://github.com/okfn/ckanext-disqus#egg=ckanext-disqus
 
+For ckan versions before 2.0, please use the `release-v1.8` branch.
+
 This will also register a plugin entry point, so you now should be
 able to add the following to your CKAN .ini file::
 
