@@ -71,3 +71,20 @@ part of this extension we suggest that theme developers incorporate the code
 directly (note that you access the relevant config variables from the config
 object passed into all templates).
 
+Single Sign On
+~~~~~~~~~~~~~
+
+Disqus offers a "Single Sign On" option which allows users to submit comments using
+the local username/password rather than require a seperate disqus account.
+For instructions on how to set things up on the Disqus end (i.e. create API keys)
+see:
+https://help.disqus.com/customer/portal/articles/236206-integrating-single-sign-on
+
+To integrate with this CKAN plugin, you must store your Public and Secret keys
+in the CKAN ini file:
+
+    ckan.plugins = disqus <other-plugins>
+    disqus.name = YOUR_DISQUS_NAME
+    disqus.secret_key  = YOUR_DISQUS_SECRET_KEY
+    disqus.public_key  = YOUR_DISQUS_PUBLIC_KEY
+
