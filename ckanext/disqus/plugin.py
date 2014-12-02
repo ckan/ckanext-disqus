@@ -8,6 +8,7 @@ import time
 import ckan.plugins as p
 
 
+
 disqus_translations = {
     'de': 'de',
     'es': 'es_ES',
@@ -41,12 +42,15 @@ class Disqus(p.SingletonPlugin):
     p.implements(p.IConfigurer)
     p.implements(p.ITemplateHelpers)
 
+
     def configure(self, config):
         """
         Called upon CKAN setup, will pass current configuration dict
         to the plugin to read custom options.
         """
         disqus_name = config.get('disqus.name', None)
+        disqus_secret_key = config.get('disqus.secret_key', None)
+        disqus_public_key = config.get('disqus.public_key', None)
         if disqus_name is None:
             log.warn("No disqus forum name is set. Please set \
                 'disqus.name' in your .ini!")
@@ -57,6 +61,8 @@ class Disqus(p.SingletonPlugin):
         # store these so available to class methods
         self.__class__.disqus_developer = disqus_developer
         self.__class__.disqus_name = disqus_name
+        self.__class__.disqus_secret_key = disqus_secret_key
+        self.__class__.disqus_public_key = disqus_public_key
 
     def update_config(self, config):
         # add template directory to template path
@@ -72,12 +78,50 @@ class Disqus(p.SingletonPlugin):
             lang = lang[:2]
         return lang
 
-
     @classmethod
     def disqus_comments(cls):
         ''' Adds Disqus Comments to the page.'''
-        # we need to create an identifier
+
         c = p.toolkit.c
+
+        #koebrick change: Get user info to send for Disqus SSO
+        #set up blank values
+        message = 'blank'
+        sig = 'blank'
+        timestamp = 'blank'
+
+       # if hasattr(c.user):
+        user_dict ={}
+        try:
+            user_dict = p.toolkit.get_action('user_show')({'keep_email': True}, {'id': c.user})
+
+        #except p.toolkit.ObjectNotFound:
+        except:
+            user_dict['id'] = ''
+            user_dict['name'] = ''
+            user_dict['email'] = ''
+            #print "user not found"
+            #'User not logged in'
+            #return {'success': True}
+            #pass
+
+        SSOdata = simplejson.dumps({
+            'id': user_dict['id'],
+            'username':  user_dict['name'],
+            'email': user_dict['email'],
+            })
+
+        message = base64.b64encode(SSOdata)
+        # generate a timestamp for signing the message
+        timestamp = int(time.time())
+        # generate our hmac signature
+        sig = hmac.HMAC(cls.disqus_secret_key, '%s %s' % (message, timestamp), hashlib.sha1).hexdigest()
+
+
+
+        #end Koebrick changes
+
+        # we need to create an identifier
         try:
             identifier = c.controller
             if identifier == 'package':
@@ -97,7 +141,13 @@ class Disqus(p.SingletonPlugin):
         data = {'identifier' : identifier,
                 'developer' : cls.disqus_developer,
                 'language' : cls.language(),
-                'disqus_shortname': cls.disqus_name,}
+                'disqus_shortname': cls.disqus_name,
+
+                #state Koebrick chagne
+                'message' : message,
+                'sig': sig,
+                'timestamp': timestamp,
+                'pub_key': cls.disqus_public_key}
         return p.toolkit.render_snippet('disqus_comments.html', data)
 
     @classmethod
