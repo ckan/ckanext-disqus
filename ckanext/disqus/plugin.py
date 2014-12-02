@@ -100,10 +100,6 @@ class Disqus(p.SingletonPlugin):
             user_dict['id'] = ''
             user_dict['name'] = ''
             user_dict['email'] = ''
-            #print "user not found"
-            #'User not logged in'
-            #return {'success': True}
-            #pass
 
         SSOdata = simplejson.dumps({
             'id': user_dict['id'],
