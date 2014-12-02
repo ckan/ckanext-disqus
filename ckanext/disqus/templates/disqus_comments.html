@@ -1,6 +1,30 @@
 <div class="module-content disqus-comments">
-  <h3>Comments</h3>
+
+{# Check if a disqus HMAC-SHA1 message has been passed, and if so, insert the disqus SSO code#}
+{% if pub_key%}
+
+     <script type="text/javascript">
+    //Check to see if user is logged in.  If so send the info.
+   //  alert('message: ' + message);
+        var disqus_config = function() {
+            this.page.remote_auth_s3 = "{{message}} {{sig}} {{timestamp}}";
+            this.page.api_key = "{{pub_key}}";
+
+            // This adds the custom login/logout functionality
+            this.sso = {
+                  name:   "{{site_title}}",
+                  button:  "{{site_url}}/images/samplenews.gif",
+                  icon:     "{{site_url}}/favicon.ico",
+                  url:        "{{site_url}}/user/login",
+                  logout:  "{{site_url}}/user/_logout",
+                  width:   "950",
+                  height:  "550"
+            };
+    }
+    </script>
+{% endif %}
   <div id="disqus_thread"></div>
+
   <script type="text/javascript">
     var disqus_shortname =  '{{ disqus_shortname }}';
     var disqus_identifier = '{{ identifier }}';

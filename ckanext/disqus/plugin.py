@@ -46,11 +46,16 @@ class Disqus(p.SingletonPlugin):
     def configure(self, config):
         """
         Called upon CKAN setup, will pass current configuration dict
-        to the plugin to read custom options.
+        to the plugin to read custom options.  To implement Disqus Single Sign
+        On, you must have your secret and public key in the ckan config file.
+        For more info on Disqus SSO see:
+        https://help.disqus.com/customer/portal/articles/236206-integrating-single-sign-on
         """
         disqus_name = config.get('disqus.name', None)
         disqus_secret_key = config.get('disqus.secret_key', None)
         disqus_public_key = config.get('disqus.public_key', None)
+        site_url = config.get('ckan.site_url', None)
+        site_title = config.get('ckan.site_title', None)
         if disqus_name is None:
             log.warn("No disqus forum name is set. Please set \
                 'disqus.name' in your .ini!")
@@ -63,6 +68,8 @@ class Disqus(p.SingletonPlugin):
         self.__class__.disqus_name = disqus_name
         self.__class__.disqus_secret_key = disqus_secret_key
         self.__class__.disqus_public_key = disqus_public_key
+        self.__class__.site_url = site_url
+        self.__class__.site_title = site_title
 
     def update_config(self, config):
         # add template directory to template path
@@ -84,23 +91,25 @@ class Disqus(p.SingletonPlugin):
 
         c = p.toolkit.c
 
-        #koebrick change: Get user info to send for Disqus SSO
-        #set up blank values
+        #Get user info to send for Disqus SSO
+
+        #Set up blank values
         message = 'blank'
         sig = 'blank'
         timestamp = 'blank'
 
-       # if hasattr(c.user):
+       # Get the user if they are logged in.
         user_dict ={}
         try:
             user_dict = p.toolkit.get_action('user_show')({'keep_email': True}, {'id': c.user})
 
-        #except p.toolkit.ObjectNotFound:
+        #Fill in blanks for the user if they are not logged in.
         except:
             user_dict['id'] = ''
             user_dict['name'] = ''
             user_dict['email'] = ''
 
+        #Create the SSOm data.
         SSOdata = simplejson.dumps({
             'id': user_dict['id'],
             'username':  user_dict['name'],
@@ -111,11 +120,12 @@ class Disqus(p.SingletonPlugin):
         # generate a timestamp for signing the message
         timestamp = int(time.time())
         # generate our hmac signature
-        sig = hmac.HMAC(cls.disqus_secret_key, '%s %s' % (message, timestamp), hashlib.sha1).hexdigest()
+
+        sig=''
+        if cls.disqus_secret_key is not None:
+            sig = hmac.HMAC(cls.disqus_secret_key, '%s %s' % (message, timestamp), hashlib.sha1).hexdigest()
 
 
-
-        #end Koebrick changes
 
         # we need to create an identifier
         try:
@@ -139,7 +149,9 @@ class Disqus(p.SingletonPlugin):
                 'language' : cls.language(),
                 'disqus_shortname': cls.disqus_name,
 
-                #state Koebrick chagne
+                #start Koebrick change
+                'site_url' : cls.site_url,
+                'site_title' : cls.site_title,
                 'message' : message,
                 'sig': sig,
                 'timestamp': timestamp,
