@@ -27,8 +27,8 @@ able to add the following to your CKAN .ini file::
  ckan.plugins = disqus <other-plugins>
  disqus.name = YOUR_DISQUS_NAME
 
-**At this point nothing will have happened**! To add comments into your pages
-see the next section.
+At this point, each dataset view page will have Disqus comments. To add comments into 
+other pages, see the next section.
 
 Using the Extension
 -------------------
@@ -39,7 +39,7 @@ Comments Threads
 To have comment threads appear on pages, insert into templates where you want the comments to
 appear::
 
-    ${h.disqus_comments()}
+    {{h.disqus_comments()}}
 
 Note for theme developers: the extensions tries to generate a disqus_identifier
 of the form::
@@ -57,11 +57,11 @@ Recent comments
 
 Insert on pages where you want recent comments to appear::
 
-    ${h.disqus_recent()}
+    {{h.disqus_recent()}}
 
 The recent comments widget will show 5 recent comments by default.  To show 10 recent comments use the following::
 
-    ${h.disqus_recent(num_comments=10)}
+    {{h.disqus_recent(num_comments=10)}}
 
 Other widgets
 ~~~~~~~~~~~~~
