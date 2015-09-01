@@ -5,6 +5,8 @@ import hmac
 import simplejson
 import time
 
+from ckan.common import request
+from ckan.lib.helpers import url_for_static_or_external
 import ckan.plugins as p
 
 disqus_translations = {
@@ -52,6 +54,7 @@ class Disqus(p.SingletonPlugin):
         disqus_name = config.get('disqus.name', None)
         disqus_secret_key = config.get('disqus.secret_key', None)
         disqus_public_key = config.get('disqus.public_key', None)
+        disqus_url = config.get('disqus.disqus_url', None)
         site_url = config.get('ckan.site_url', None)
         site_title = config.get('ckan.site_title', None)
         if disqus_name is None:
@@ -67,6 +70,7 @@ class Disqus(p.SingletonPlugin):
         self.__class__.disqus_name = disqus_name
         self.__class__.disqus_secret_key = disqus_secret_key
         self.__class__.disqus_public_key = disqus_public_key
+        self.__class__.disqus_url = disqus_url
         self.__class__.site_url = site_url
         self.__class__.site_title = site_title
 
@@ -153,6 +157,7 @@ class Disqus(p.SingletonPlugin):
                 'sig': sig,
                 'timestamp': timestamp,
                 'pub_key': cls.disqus_public_key}
+
         return p.toolkit.render_snippet('disqus_comments.html', data)
 
     @classmethod
@@ -162,6 +167,18 @@ class Disqus(p.SingletonPlugin):
                 'disqus_num_comments': num_comments}
         return p.toolkit.render_snippet('disqus_recent.html', data)
 
+    @classmethod
+    def current_disqus_url(cls, ):
+        '''If `disqus.disqus_url` is defined, return a fully qualified url for
+        the current page with `disqus.disqus_url` as the base url,'''
+
+        if cls.disqus_url is None:
+            return None
+
+        return url_for_static_or_external(request.environ['CKAN_CURRENT_URL'],
+                                          qualified=True, host=cls.disqus_url)
+
     def get_helpers(self):
         return {'disqus_comments': self.disqus_comments,
-                'disqus_recent': self.disqus_recent}
+                'disqus_recent': self.disqus_recent,
+                'current_disqus_url': self.current_disqus_url}

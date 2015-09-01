@@ -23,11 +23,16 @@
     }
     </script>
 {% endif %}
+
   <div id="disqus_thread"></div>
 
   <script type="text/javascript">
     var disqus_shortname =  '{{ disqus_shortname }}';
     var disqus_identifier = '{{ identifier }}';
+    {%- set disqus_url = h.current_disqus_url() %}
+    {%- if disqus_url %}
+    var disqus_url = '{{ disqus_url }}';
+    {% endif %}
 
       /* * * DON'T EDIT BELOW THIS LINE * * */
       (function() {

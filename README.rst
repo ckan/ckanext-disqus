@@ -27,8 +27,17 @@ able to add the following to your CKAN .ini file::
  ckan.plugins = disqus <other-plugins>
  disqus.name = YOUR_DISQUS_NAME
 
-At this point, each dataset view page will have Disqus comments. To add comments into 
+At this point, each dataset view page will have Disqus comments. To add comments into
 other pages, see the next section.
+
+Disqus will use window.location.href as the `disqus_url`. It is sometimes
+helpful, especially during development, to specify the base url for disqus to
+use instead. This can be added to the CKAN .ini file::
+
+ disqus.disqus_url = my_staging.server.com
+
+Do not include 'http://' or a trailing slash.
+
 
 Using the Extension
 -------------------
@@ -87,5 +96,3 @@ in the CKAN ini file::
     disqus.name = YOUR_DISQUS_NAME
     disqus.secret_key  = YOUR_DISQUS_SECRET_KEY
     disqus.public_key  = YOUR_DISQUS_PUBLIC_KEY
-
-I
