@@ -1,12 +1,13 @@
 <div class="module-content disqus-comments">
 
-{# Check if a disqus HMAC-SHA1 message has been passed, and if so, insert the disqus SSO code#}
-{% if pub_key%}
-
-     <script type="text/javascript">
+    <script type="text/javascript">
     //Check to see if user is logged in.  If so send the info.
-   //  alert('message: ' + message);
         var disqus_config = function() {
+            this.language = "{{language}}";
+
+            {# Check if a disqus HMAC-SHA1 message has been passed, and if so,
+            insert the disqus SSO code #}
+            {% if pub_key%}
             this.page.remote_auth_s3 = "{{message}} {{sig}} {{timestamp}}";
             this.page.api_key = "{{pub_key}}";
 
@@ -20,9 +21,9 @@
                   width:   "950",
                   height:  "550"
             };
-    }
+            {% endif %}
+        }
     </script>
-{% endif %}
 
   <div id="disqus_thread"></div>
 
