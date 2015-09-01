@@ -7,8 +7,6 @@ import time
 
 import ckan.plugins as p
 
-
-
 disqus_translations = {
     'de': 'de',
     'es': 'es_ES',
@@ -21,36 +19,36 @@ disqus_translations = {
 
 # These are funny disqus language codes
 # all other codes are two letter language code
-##Portuguese (Brazil) = pt_BR
-##Portuguese (European) = pt_EU
-##Serbian (Cyrillic) = sr_CYRL
-##Serbian (Latin) = sr_LATIN
-##Spanish (Argentina) = es_AR
-##Spanish (Mexico) = es_MX
-##Spanish (Spain) = es_ES
-##Swedish = sv_SE
+
+# Portuguese (Brazil) = pt_BR
+# Portuguese (European) = pt_EU
+# Serbian (Cyrillic) = sr_CYRL
+# Serbian (Latin) = sr_LATIN
+# Spanish (Argentina) = es_AR
+# Spanish (Mexico) = es_MX
+# Spanish (Spain) = es_ES
+# Swedish = sv_SE
 
 log = logging.getLogger(__name__)
 
 
 class Disqus(p.SingletonPlugin):
-    """
-    Insert javascript fragments into package pages and the home page to
-    allow users to view and create comments on any package.
-    """
+    '''
+    Insert javascript fragments into package pages and the home page to allow
+    users to view and create comments on any package.
+    '''
     p.implements(p.IConfigurable)
     p.implements(p.IConfigurer)
     p.implements(p.ITemplateHelpers)
 
-
     def configure(self, config):
-        """
-        Called upon CKAN setup, will pass current configuration dict
-        to the plugin to read custom options.  To implement Disqus Single Sign
-        On, you must have your secret and public key in the ckan config file.
-        For more info on Disqus SSO see:
+        '''
+        Called upon CKAN setup, will pass current configuration dict to the
+        plugin to read custom options.  To implement Disqus Single Sign On,
+        you must have your secret and public key in the ckan config file. For
+        more info on Disqus SSO see:
         https://help.disqus.com/customer/portal/articles/236206-integrating-single-sign-on
-        """
+        '''
         disqus_name = config.get('disqus.name', None)
         disqus_secret_key = config.get('disqus.secret_key', None)
         disqus_public_key = config.get('disqus.public_key', None)
@@ -61,7 +59,8 @@ class Disqus(p.SingletonPlugin):
                 'disqus.name' in your .ini!")
         config['pylons.app_globals'].has_commenting = True
 
-        disqus_developer = p.toolkit.asbool(config.get('disqus.developer', 'false'))
+        disqus_developer = p.toolkit.asbool(config.get('disqus.developer',
+                                                       'false'))
         disqus_developer = str(disqus_developer).lower()
         # store these so available to class methods
         self.__class__.disqus_developer = disqus_developer
@@ -75,7 +74,6 @@ class Disqus(p.SingletonPlugin):
         # add template directory to template path
         p.toolkit.add_template_directory(config, 'templates')
 
-
     @classmethod
     def language(cls):
         lang = p.toolkit.request.environ.get('CKAN_LANG')
@@ -87,29 +85,30 @@ class Disqus(p.SingletonPlugin):
 
     @classmethod
     def disqus_comments(cls):
-        ''' Adds Disqus Comments to the page.'''
+        '''Add Disqus Comments to the page.'''
 
         c = p.toolkit.c
 
-        #Get user info to send for Disqus SSO
+        # Get user info to send for Disqus SSO
 
-        #Set up blank values
+        # Set up blank values
         message = 'blank'
         sig = 'blank'
         timestamp = 'blank'
 
-       # Get the user if they are logged in.
-        user_dict ={}
+        # Get the user if they are logged in.
+        user_dict = {}
         try:
-            user_dict = p.toolkit.get_action('user_show')({'keep_email': True}, {'id': c.user})
+            user_dict = p.toolkit.get_action('user_show')({'keep_email': True},
+                                                          {'id': c.user})
 
-        #Fill in blanks for the user if they are not logged in.
+        # Fill in blanks for the user if they are not logged in.
         except:
             user_dict['id'] = ''
             user_dict['name'] = ''
             user_dict['email'] = ''
 
-        #Create the SSOm data.
+        # Create the SSOm data.
         SSOdata = simplejson.dumps({
             'id': user_dict['id'],
             'username':  user_dict['name'],
@@ -120,12 +119,10 @@ class Disqus(p.SingletonPlugin):
         # generate a timestamp for signing the message
         timestamp = int(time.time())
         # generate our hmac signature
-
-        sig=''
+        sig = ''
         if cls.disqus_secret_key is not None:
-            sig = hmac.HMAC(cls.disqus_secret_key, '%s %s' % (message, timestamp), hashlib.sha1).hexdigest()
-
-
+            sig = hmac.HMAC(cls.disqus_secret_key, '%s %s' %
+                            (message, timestamp), hashlib.sha1).hexdigest()
 
         # we need to create an identifier
         try:
@@ -144,15 +141,15 @@ class Disqus(p.SingletonPlugin):
                 identifier = 'dataset-resource::' + c.resource_id
         except:
             identifier = ''
-        data = {'identifier' : identifier,
-                'developer' : cls.disqus_developer,
-                'language' : cls.language(),
+        data = {'identifier': identifier,
+                'developer': cls.disqus_developer,
+                'language': cls.language(),
                 'disqus_shortname': cls.disqus_name,
 
-                #start Koebrick change
-                'site_url' : cls.site_url,
-                'site_title' : cls.site_title,
-                'message' : message,
+                # start Koebrick change
+                'site_url': cls.site_url,
+                'site_title': cls.site_title,
+                'message': message,
                 'sig': sig,
                 'timestamp': timestamp,
                 'pub_key': cls.disqus_public_key}
@@ -160,11 +157,11 @@ class Disqus(p.SingletonPlugin):
 
     @classmethod
     def disqus_recent(cls, num_comments=5):
-        '''  Adds Disqus recent comments to the page. '''
+        '''Add Disqus recent comments to the page. '''
         data = {'disqus_shortname': cls.disqus_name,
-                'disqus_num_comments' : num_comments,}
+                'disqus_num_comments': num_comments}
         return p.toolkit.render_snippet('disqus_recent.html', data)
 
     def get_helpers(self):
-        return {'disqus_comments' : self.disqus_comments,
-                'disqus_recent' : self.disqus_recent,}
+        return {'disqus_comments': self.disqus_comments,
+                'disqus_recent': self.disqus_recent}
