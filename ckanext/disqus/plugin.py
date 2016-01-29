@@ -6,7 +6,7 @@ import simplejson
 import time
 
 from ckan.common import request
-from ckan.lib.helpers import url_for_static_or_external
+import ckan.lib.helpers as h
 import ckan.plugins as p
 
 disqus_translations = {
@@ -21,27 +21,35 @@ disqus_translations = {
 
 # These are funny disqus language codes
 # all other codes are two letter language code
-
-# Portuguese (Brazil) = pt_BR
-# Portuguese (European) = pt_EU
-# Serbian (Cyrillic) = sr_CYRL
-# Serbian (Latin) = sr_LATIN
-# Spanish (Argentina) = es_AR
-# Spanish (Mexico) = es_MX
-# Spanish (Spain) = es_ES
-# Swedish = sv_SE
+##Portuguese (Brazil) = pt_BR
+##Portuguese (European) = pt_EU
+##Serbian (Cyrillic) = sr_CYRL
+##Serbian (Latin) = sr_LATIN
+##Spanish (Argentina) = es_AR
+##Spanish (Mexico) = es_MX
+##Spanish (Spain) = es_ES
+##Swedish = sv_SE
 
 log = logging.getLogger(__name__)
 
 
 class Disqus(p.SingletonPlugin):
-    '''
-    Insert javascript fragments into package pages and the home page to allow
-    users to view and create comments on any package.
-    '''
+    """
+    Insert javascript fragments into package pages and the home page to
+    allow users to view and create comments on any package.
+    """
     p.implements(p.IConfigurable)
     p.implements(p.IConfigurer)
     p.implements(p.ITemplateHelpers)
+    p.implements(p.IRoutes)     
+
+    def before_map(self, map):
+        map.connect('disqus_callback', '/disqus_callback', controller='ckanext.disqus.controllers.disqus:DisqusController', action='callback')
+        return map
+    
+    
+    def after_map(self, map):
+        return map
 
     def configure(self, config):
         '''
@@ -65,9 +73,12 @@ class Disqus(p.SingletonPlugin):
         disqus_developer = p.toolkit.asbool(config.get('disqus.developer',
                                                        'false'))
         disqus_developer = str(disqus_developer).lower()
+
+        add_callback = p.toolkit.asbool(config.get('disqus.callback', 'false'))
         # store these so available to class methods
         self.__class__.disqus_developer = disqus_developer
         self.__class__.disqus_name = disqus_name
+        self.__class__.add_callback = add_callback
         self.__class__.disqus_secret_key = disqus_secret_key
         self.__class__.disqus_public_key = disqus_public_key
         self.__class__.disqus_url = disqus_url
@@ -78,6 +89,7 @@ class Disqus(p.SingletonPlugin):
         # add template directory to template path
         p.toolkit.add_template_directory(config, 'templates')
 
+
     @classmethod
     def language(cls):
         lang = p.toolkit.request.environ.get('CKAN_LANG')
@@ -87,10 +99,11 @@ class Disqus(p.SingletonPlugin):
             lang = lang[:2]
         return lang
 
+
     @classmethod
     def disqus_comments(cls):
-        '''Add Disqus Comments to the page.'''
-
+        ''' Adds Disqus Comments to the page.'''
+        # we need to create an identifier
         c = p.toolkit.c
 
         # Get user info to send for Disqus SSO
@@ -135,8 +148,10 @@ class Disqus(p.SingletonPlugin):
                 identifier = 'dataset'
             if c.current_package_id:
                 identifier += '::' + c.current_package_id
+                pkg_id = c.current_package_id
             elif c.id:
                 identifier += '::' + c.id
+                pkg_id = c.id
             else:
                 # cannot make an identifier
                 identifier = ''
@@ -145,11 +160,12 @@ class Disqus(p.SingletonPlugin):
                 identifier = 'dataset-resource::' + c.resource_id
         except:
             identifier = ''
-        data = {'identifier': identifier,
-                'developer': cls.disqus_developer,
-                'language': cls.language(),
+        data = {'identifier' : identifier,
+                'pkg_id': pkg_id,
+                'developer' : cls.disqus_developer,
+                'language' : cls.language(),
                 'disqus_shortname': cls.disqus_name,
-
+                'add_callback': cls.add_callback,
                 # start Koebrick change
                 'site_url': cls.site_url,
                 'site_title': cls.site_title,
@@ -162,9 +178,9 @@ class Disqus(p.SingletonPlugin):
 
     @classmethod
     def disqus_recent(cls, num_comments=5):
-        '''Add Disqus recent comments to the page. '''
+        '''  Adds Disqus recent comments to the page. '''
         data = {'disqus_shortname': cls.disqus_name,
-                'disqus_num_comments': num_comments}
+                'disqus_num_comments' : num_comments,}
         return p.toolkit.render_snippet('disqus_recent.html', data)
 
     @classmethod
@@ -175,10 +191,9 @@ class Disqus(p.SingletonPlugin):
         if cls.disqus_url is None:
             return None
 
-        return url_for_static_or_external(request.environ['CKAN_CURRENT_URL'],
-                                          qualified=True, host=cls.disqus_url)
+        return h.url_for_static_or_external(request.environ['CKAN_CURRENT_URL'], qualified=True, host=cls.disqus_url)        
 
     def get_helpers(self):
-        return {'disqus_comments': self.disqus_comments,
-                'disqus_recent': self.disqus_recent,
+        return {'disqus_comments' : self.disqus_comments,
+                'disqus_recent' : self.disqus_recent,
                 'current_disqus_url': self.current_disqus_url}
