@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: disqus 0.1.2\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-07-09 10:05+0300\n"
+"POT-Creation-Date: 2018-07-09 14:23+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: ckanext/disqus/controllers/disqus.py:43
+#: ckanext/disqus/controllers/disqus.py:45
 #, python-format
 msgid "New comment for dataset \"%(title)s\""
 msgstr ""
 
-#: ckanext/disqus/controllers/disqus.py:44
+#: ckanext/disqus/controllers/disqus.py:46
 #, python-format
 msgid ""
-"<p>The dataset <a href=\"%(url)s\">\"%(title)s\"</a> has received a new "
-"comment:</p><p>%(comment)s</p>"
+"The dataset \"%(title)s\" has received a new comment:\n"
+"\n"
+"%(comment)s\n"
+"\n"
+"<%(url)s>"
 msgstr ""
 
-#: ckanext/disqus/controllers/disqus.py:45
+#: ckanext/disqus/controllers/disqus.py:47
 msgid "Dataset maintainer"
 msgstr ""
 

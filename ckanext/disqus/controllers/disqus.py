@@ -43,7 +43,7 @@ class DisqusController(base.BaseController):
                         'comment': comment
                         }
                 title = _(u'New comment for dataset "%(title)s"') % msg_fields
-                msg = _(u'<p>The dataset <a href="%(url)s">"%(title)s"</a> has received a new comment:</p><p>%(comment)s</p>') % msg_fields
+                msg = _(u'The dataset "%(title)s" has received a new comment:\n\n%(comment)s\n\n<%(url)s>') % msg_fields
                 recipient_name = pkg.get(recipient_name_field, _(u'Dataset maintainer'))
                 recipient_email = pkg.get(recipient_email_field)
                 try:
