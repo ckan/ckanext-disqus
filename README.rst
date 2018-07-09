@@ -38,6 +38,17 @@ use instead. This can be added to the CKAN .ini file::
 
 Do not include 'http://' or a trailing slash.
 
+E-mail notifications
+~~~~~~~~~~~~~~~~~~~~
+
+To activate e-mail notifications, add the following fields to your CKAN .ini file::
+
+ disqus.notify = True
+ disqus.notify.name_field <dataset maintainer name field>
+ disqus.notify.email_field <dataset maintainer e-mail address field>
+
+This will insert a callback function to the disqus widget. The callback requests `/disqus-notify` that sends an e-mail to the package maintainer.
+
 
 Using the Extension
 -------------------
