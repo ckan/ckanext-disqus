@@ -34,7 +34,7 @@ class DisqusController(base.BaseController):
 
         if pkg_id is not None:
             pkg = logic.get_action('package_show')({'ignore_auth': True}, {'id': pkg_id})
-            if recipient_email_field in pkg and pkg.get(recipient_email_field) is not None:
+            if recipient_email_field in pkg and pkg.get(recipient_email_field, '') != '':
                 url_path = toolkit.url_for(controller='package', action='read', id=pkg_id)
                 url = '%s%s' % (request.host_url, url_path)
                 msg_fields = {
@@ -46,9 +46,8 @@ class DisqusController(base.BaseController):
                 msg = _(u'<p>The dataset <a href="%(url)s">"%(title)s"</a> has received a new comment:</p><p>%(comment)s</p>') % msg_fields
                 recipient_name = pkg.get(recipient_name_field, _(u'Dataset maintainer'))
                 recipient_email = pkg.get(recipient_email_field)
-                log.info('### MAIL %s <%s>:\n%s: %s' % (recipient_name, recipient_email, title, msg))
                 try:
-                    mailer.mail_recipient(recipient_name , recipient_name, title, msg)
+                    mailer.mail_recipient(recipient_name, recipient_email, title, msg)
                     mail_sent = True
                 except mailer.MailerException, e:
                     log.error('Could not send disqus notification mail: %s' % e)
