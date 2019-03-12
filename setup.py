@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
-import sys, os
+import sys  # noqa
+import os  # noqa
 
 version = '0.1.2'
 
@@ -9,7 +10,7 @@ setup(
     description="Disqus commenting feature for CKAN",
     long_description="""\
     """,
-    classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+    classifiers=[],  # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
     keywords='ckan, disqus, comments, commenting, discussion',
     author='Open Knowledge Foundation',
     author_email='info@okfn.org',

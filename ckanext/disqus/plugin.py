@@ -47,9 +47,9 @@ class Disqus(p.SingletonPlugin, DefaultTranslation):
     p.implements(p.ITranslation)
 
     def before_map(self, map):
-        map.connect('disqus_notify', '/disqus_notify', controller='ckanext.disqus.controllers.disqus:DisqusController', action='notify')
+        map.connect('disqus_notify', '/disqus_notify',
+                    controller='ckanext.disqus.controllers.disqus:DisqusController', action='notify')
         return map
-
 
     def after_map(self, map):
         return map
@@ -93,7 +93,6 @@ class Disqus(p.SingletonPlugin, DefaultTranslation):
         # add template directory to template path
         p.toolkit.add_template_directory(config, 'templates')
 
-
     @classmethod
     def language(cls):
         lang = p.toolkit.request.environ.get('CKAN_LANG')
@@ -102,7 +101,6 @@ class Disqus(p.SingletonPlugin, DefaultTranslation):
         else:
             lang = lang[:2]
         return lang
-
 
     @classmethod
     def disqus_comments(cls):
@@ -123,7 +121,7 @@ class Disqus(p.SingletonPlugin, DefaultTranslation):
                                                           {'id': c.user})
 
         # Fill in blanks for the user if they are not logged in.
-        except:
+        except:  # noqa
             user_dict['id'] = ''
             user_dict['name'] = ''
             user_dict['email'] = ''
@@ -133,7 +131,7 @@ class Disqus(p.SingletonPlugin, DefaultTranslation):
             'id': user_dict['id'],
             'username':  user_dict['name'],
             'email': user_dict['email'],
-            })
+        })
 
         message = base64.b64encode(SSOdata)
         # generate a timestamp for signing the message
@@ -161,7 +159,7 @@ class Disqus(p.SingletonPlugin, DefaultTranslation):
             # special case
             if c.action == 'resource_read':
                 identifier = 'dataset-resource::' + c.resource_id
-        except:
+        except:  # noqa
             identifier = ''
         data = {'identifier': identifier,
                 'developer': cls.disqus_developer,

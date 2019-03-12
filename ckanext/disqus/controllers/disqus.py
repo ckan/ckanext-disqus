@@ -1,10 +1,11 @@
 ﻿# -*- coding: utf-8 -*-
 
+from ckan.common import json, request, c, g, response, _  # noqa: F401
 import logging
 
 import ckan.lib.base as base
-import ckan.model as model
-import ckan.lib.render
+import ckan.model as model  # noqa: F401
+import ckan.lib.render  # noqa: F401
 import ckan.plugins.toolkit as toolkit
 import ckan.logic as logic
 import ckan.lib.mailer as mailer
@@ -14,9 +15,9 @@ import pylons.config as config
 
 render = base.render
 
-from ckan.common import json, request, c, g, response, _
 
 log = logging.getLogger(__name__)
+
 
 class DisqusController(base.BaseController):
 
@@ -33,27 +34,31 @@ class DisqusController(base.BaseController):
         mail_sent = False
 
         if pkg_id is not None:
-            pkg = logic.get_action('package_show')({'ignore_auth': True}, {'id': pkg_id})
+            pkg = logic.get_action('package_show')(
+                {'ignore_auth': True}, {'id': pkg_id})
             if recipient_email_field in pkg and pkg.get(recipient_email_field, '') != '':
-                url_path = toolkit.url_for(controller='package', action='read', id=pkg_id)
+                url_path = toolkit.url_for(
+                    controller='package', action='read', id=pkg_id)
                 url = '%s%s' % (request.host_url, url_path)
                 msg_fields = {
-                        'url': url,
-                        'title': pkg["title"],
-                        'comment': comment
-                        }
+                    'url': url,
+                    'title': pkg["title"],
+                    'comment': comment
+                }
                 title = _(u'New comment for dataset "%(title)s"') % msg_fields
-                msg = _(u'The dataset "%(title)s" has received a new comment:\n\n%(comment)s\n\n<%(url)s>') % msg_fields
-                recipient_name = pkg.get(recipient_name_field, _(u'Dataset maintainer'))
+                msg = _(
+                    u'The dataset "%(title)s" has received a new comment:\n\n%(comment)s\n\n<%(url)s>') % msg_fields
+                recipient_name = pkg.get(
+                    recipient_name_field, _(u'Dataset maintainer'))
                 recipient_email = pkg.get(recipient_email_field)
                 try:
-                    mailer.mail_recipient(recipient_name, recipient_email, title, msg)
+                    mailer.mail_recipient(
+                        recipient_name, recipient_email, title, msg)
                     mail_sent = True
                 except mailer.MailerException, e:
                     log.error('Could not send disqus notification mail: %s' % e)
 
-
-        data = {'comment_id' : comment_id,
+        data = {'comment_id': comment_id,
                 'pkg_id': pkg_id,
                 'mail_sent': mail_sent}
         result = render('disqus_callback.html', data)
