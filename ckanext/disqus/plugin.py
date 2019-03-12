@@ -107,7 +107,7 @@ class Disqus(p.SingletonPlugin):
                                                           {'id': c.user})
 
         # Fill in blanks for the user if they are not logged in.
-        except:
+        except: # noqa
             user_dict['id'] = ''
             user_dict['name'] = ''
             user_dict['email'] = ''
@@ -117,7 +117,7 @@ class Disqus(p.SingletonPlugin):
             'id': user_dict['id'],
             'username':  user_dict['name'],
             'email': user_dict['email'],
-            })
+        })
 
         message = base64.b64encode(SSOdata)
         # generate a timestamp for signing the message
@@ -143,7 +143,7 @@ class Disqus(p.SingletonPlugin):
             # special case
             if c.action == 'resource_read':
                 identifier = 'dataset-resource::' + c.resource_id
-        except:
+        except: # noqa
             identifier = ''
         data = {'identifier': identifier,
                 'developer': cls.disqus_developer,
