@@ -120,7 +120,7 @@ class Disqus(p.SingletonPlugin):
             'email': user_dict['email'],
             })
 
-        message = base64.b64encode(SSOdata)
+        message = base64.b64encode(SSOdata.encode())
         # generate a timestamp for signing the message
         timestamp = int(time.time())
         # generate our hmac signature
