@@ -1,29 +1,29 @@
 <div class="module-content disqus-comments">
 
-    <script type="text/javascript">
-    //Check to see if user is logged in.  If so send the info.
-        var disqus_config = function() {
-            this.language = "{{language}}";
+  <script type="text/javascript">
+  //Check to see if user is logged in.  If so send the info.
+    var disqus_config = function() {
+      this.language = "{{language}}";
 
-            {# Check if a disqus HMAC-SHA1 message has been passed, and if so,
-            insert the disqus SSO code #}
-            {% if pub_key%}
-            this.page.remote_auth_s3 = "{{message}} {{sig}} {{timestamp}}";
-            this.page.api_key = "{{pub_key}}";
+      {# Check if a disqus HMAC-SHA1 message has been passed, and if so,
+      insert the disqus SSO code #}
+      {% if pub_key%}
+        this.page.remote_auth_s3 = "{{message}} {{sig}} {{timestamp}}";
+        this.page.api_key = "{{pub_key}}";
 
-            // This adds the custom login/logout functionality
-            this.sso = {
-                  name:   "{{site_title}}",
-                  button:  "{{site_url}}/images/samplenews.gif",
-                  icon:     "{{site_url}}/favicon.ico",
-                  url:        "{{site_url}}/user/login",
-                  logout:  "{{site_url}}/user/_logout",
-                  width:   "950",
-                  height:  "550"
-            };
-            {% endif %}
-        }
-    </script>
+        // This adds the custom login/logout functionality
+        this.sso = {
+          name:    "{{site_title}}",
+          button:  "{{site_url}}/images/samplenews.gif",
+          icon:    "{{site_url}}/favicon.ico",
+          url:     "{{site_url}}/user/login",
+          logout:  "{{site_url}}/user/_logout",
+          width:   "950",
+          height:  "550"
+        };
+      {% endif %}
+    }
+  </script>
 
   <div id="disqus_thread"></div>
 
@@ -32,7 +32,7 @@
     var disqus_identifier = '{{ identifier }}';
     {%- set disqus_url = h.current_disqus_url() %}
     {%- if disqus_url %}
-    var disqus_url = '{{ disqus_url }}';
+      var disqus_url = '{{ disqus_url }}';
     {% endif %}
 
       /* * * DON'T EDIT BELOW THIS LINE * * */
