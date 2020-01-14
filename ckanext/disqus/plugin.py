@@ -40,6 +40,7 @@ class Disqus(p.SingletonPlugin):
     Insert javascript fragments into package pages and the home page to allow
     users to view and create comments on any package.
     """
+    
     p.implements(p.IConfigurable)
     p.implements(p.IConfigurer)
     p.implements(p.ITemplateHelpers)
@@ -52,6 +53,7 @@ class Disqus(p.SingletonPlugin):
         more info on Disqus SSO see:
         https://help.disqus.com/customer/portal/articles/236206-integrating-single-sign-on
         """
+
         disqus_name = config.get("disqus.name", None)
         disqus_secret_key = config.get("disqus.secret_key", None)
         disqus_public_key = config.get("disqus.public_key", None)
@@ -103,8 +105,10 @@ class Disqus(p.SingletonPlugin):
         # Get the user if they are logged in.
         user_dict = {}
         try:
-            user_dict = p.toolkit.get_action("user_show")({"keep_email": True},
-                                                          {"id": c.user})
+            user_dict = p.toolkit.get_action("user_show")(
+                {"keep_email": True},
+                {"id": c.user}
+            )
 
         # Fill in blanks for the user if they are not logged in.
         except:
@@ -145,26 +149,31 @@ class Disqus(p.SingletonPlugin):
                 identifier = "dataset-resource::" + c.resource_id
         except:
             identifier = ""
-        data = {"identifier": identifier,
-                "developer": cls.disqus_developer,
-                "language": cls.language(),
-                "disqus_shortname": cls.disqus_name,
+        data = {
+            "identifier": identifier,
+            "developer": cls.disqus_developer,
+            "language": cls.language(),
+            "disqus_shortname": cls.disqus_name,
 
-                # start Koebrick change
-                "site_url": cls.site_url,
-                "site_title": cls.site_title,
-                "message": message,
-                "sig": sig,
-                "timestamp": timestamp,
-                "pub_key": cls.disqus_public_key}
+            # start Koebrick change
+            "site_url": cls.site_url,
+            "site_title": cls.site_title,
+            "message": message,
+            "sig": sig,
+            "timestamp": timestamp,
+            "pub_key": cls.disqus_public_key
+        }
 
         return p.toolkit.render_snippet("disqus_comments.html", data)
 
     @classmethod
     def disqus_recent(cls, num_comments=5):
         """Add Disqus recent comments to the page. """
-        data = {"disqus_shortname": cls.disqus_name,
-                "disqus_num_comments": num_comments}
+
+        data = {
+            "disqus_shortname": cls.disqus_name,
+            "disqus_num_comments": num_comments
+        }
         return p.toolkit.render_snippet("disqus_recent.html", data)
 
     @classmethod
@@ -175,10 +184,15 @@ class Disqus(p.SingletonPlugin):
         if cls.disqus_url is None:
             return None
 
-        return url_for_static_or_external(request.environ["CKAN_CURRENT_URL"],
-                                          qualified=True, host=cls.disqus_url)
+        return url_for_static_or_external(
+            request.environ["CKAN_CURRENT_URL"],
+            qualified=True,
+            host=cls.disqus_url
+        )
 
     def get_helpers(self):
-        return {"disqus_comments": self.disqus_comments,
-                "disqus_recent": self.disqus_recent,
-                "current_disqus_url": self.current_disqus_url}
+        return {
+            "disqus_comments": self.disqus_comments,
+            "disqus_recent": self.disqus_recent,
+            "current_disqus_url": self.current_disqus_url
+        }
