@@ -4,7 +4,7 @@ import sys, os
 version = '0.1'
 
 setup(
-	name='disqus',
+	name='ckanext-disqus',
 	version=version,
 	description="Disqus commenting feature for CKAN",
 	long_description="""\
