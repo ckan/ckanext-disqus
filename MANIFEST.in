@@ -1,0 +1,3 @@
+recursive-include ckanext/disqus/templates *
+recursive-include ckanext/disqus/controllers *
+include setup.py

@@ -1,26 +1,43 @@
 <div class="module-content disqus-comments">
 
     <script type="text/javascript">
-    //Check to see if user is logged in.  If so send the info.
-        var disqus_config = function() {
+        //Check to see if user is logged in.  If so send the info.
+        var disqus_config = function () {
             this.language = "{{language}}";
+            {% if add_callback %}
+            this.callbacks.onNewComment = [function (comment) {
+                $.ajax({
+                        method: "POST",
+                        url: "{{ h.url_for(controller='ckanext.disqus.controllers.disqus:DisqusController', action='callback') }}",
+                        data: {
+                            "comment": comment.text,
+                            "comment_id": comment.id,
+                            "pkg_id": "{{ pkg_id }}"
+                        }
+                    })
+                    .done(function (msg) {
+                        //alert("Data Saved: " + msg);
+                    });
+            }];
+            {% endif %}
 
-            {# Check if a disqus HMAC-SHA1 message has been passed, and if so,
-            insert the disqus SSO code #}
-            {% if pub_key%}
+
+
+            {# Check if a disqus HMAC - SHA1 message has been passed, and if so, insert the disqus SSO code #} 
+            {%  if pub_key %}
             this.page.remote_auth_s3 = "{{message}} {{sig}} {{timestamp}}";
             this.page.api_key = "{{pub_key}}";
 
             // This adds the custom login/logout functionality
             this.sso = {
-                  name:   "{{site_title}}",
-                  button:  "{{site_url}}/images/samplenews.gif",
-                  icon:     "{{site_url}}/favicon.ico",
-                  url:        "{{site_url}}/user/login",
-                  logout:  "{{site_url}}/user/_logout",
-                  width:   "950",
-                  height:  "550"
-            };
+                name: "{{site_title}}",
+                button: "{{site_url}}/images/samplenews.gif",
+                icon: "{{site_url}}/favicon.ico",
+                url: "{{site_url}}/user/login",
+                logout: "{{site_url}}/user/_logout",
+                width: "950",
+                height: "550"
+            }; 
             {% endif %}
         }
     </script>
@@ -34,11 +51,10 @@
     {%- if disqus_url %}
     var disqus_url = '{{ disqus_url }}';
     {% endif %}
-
       /* * * DON'T EDIT BELOW THIS LINE * * */
       (function() {
           var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-          dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+          dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
           (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
       })();
   </script>
